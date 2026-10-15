@@ -1,1 +1,152 @@
+/* ==========================================================================
+   tokens.css — every colour, size and timing used by the site.
+   WHY: if all values live here, changing the look later means editing ONE
+   file, and every page follows. Pages use var(--name), never raw hex codes.
+   ========================================================================== */
 
+/* ---------- Daylight theme (the default) ---------- */
+:root,
+:root[data-theme="daylight"] {
+  color-scheme: light;
+
+  /* Brand colours. --terracotta is decoration only: it fails contrast
+     for text (2.83:1), so buttons use --accent instead. */
+  --cream: #F6EFE6;
+  --espresso: #3B2A20;
+  --latte: #C9A27E;
+  --terracotta: #C97B63;
+  --forest: #3E5C4B;
+
+  /* Semantic colours: named by JOB, not by colour. */
+  --bg: #F6EFE6;
+  --surface: #FFFBF5;
+  --surface-2: #EFE5D6;
+  --text: #3B2A20;
+  --text-muted: #6B5545;
+  --accent: #A24E38;
+  --accent-hover: #8A402D;
+  --accent-contrast: #FFFBF5;   /* text that sits ON the accent colour */
+  --accent-soft: #F1D9CF;
+  --secondary: #3E5C4B;
+  --secondary-contrast: #FFFBF5;
+  --border: #D9C7B0;            /* decorative lines only */
+  --border-control: #8C6B4B;    /* inputs and buttons (3:1+ contrast) */
+  --focus: #2F5D8A;
+  --error: #A3281F;
+  --success: #3E5C4B;
+
+  --shadow-1: 0 1px 2px rgba(59, 42, 32, 0.08);
+  --shadow-2: 0 4px 12px rgba(59, 42, 32, 0.10);
+  --shadow-3: 0 12px 32px rgba(59, 42, 32, 0.16);
+}
+
+/* ---------- Midnight theme (dark) ---------- */
+:root[data-theme="midnight"] {
+  color-scheme: dark;
+
+  --bg: #2A2433;
+  --surface: #352E41;
+  --surface-2: #3F3750;
+  --text: #EDE3D3;
+  --text-muted: #BDB2C4;
+  --accent: #E39A82;
+  --accent-hover: #EDAA94;
+  --accent-contrast: #2A2433;
+  --accent-soft: #4A3A3E;
+  --secondary: #8FBCA0;
+  --secondary-contrast: #2A2433;
+  --border: #4A4057;
+  --border-control: #8A7C9C;
+  --focus: #8DB8E8;
+  --error: #FF9E94;
+  --success: #8FBCA0;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 12px 32px rgba(0, 0, 0, 0.50);
+}
+
+/* ---------- Nook scenes (set by <html data-nook="...">) ---------- */
+:root[data-nook="rainy"]   { --nook-bg: #3C4A57; --nook-light: #A9BCCB; }
+:root[data-nook="sunny"]   { --nook-bg: #F8E8CF; --nook-light: #FFD98A; }
+:root[data-nook="library"] { --nook-bg: #2A2433; --nook-light: #E8B36B; }
+
+/* ---------- Tokens that do not change with the theme ---------- */
+:root {
+  --font-serif: "Lora", Georgia, "Times New Roman", serif;
+  --font-ui: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --fs-xs: 0.8rem;
+  --fs-sm: 0.9rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.4rem;
+  --fs-xl: 1.75rem;
+  --fs-2xl: 2.2rem;
+  --fs-hero: clamp(2.2rem, 6vw, 3.5rem);
+
+  /* Spacing on an 8px grid (1rem = 16px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --focus-ring: 3px solid var(--focus);
+  --focus-offset: 2px;
+
+  --elev-1: var(--shadow-1);
+  --elev-2: var(--shadow-2);
+  --elev-3: var(--shadow-3);
+
+  --z-nav: 100;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* Motion: only opacity/transform are animated, to stay light on phones */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
+  --ease-soft: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --content-max: 1100px;
+  --tap-min: 44px;        /* smallest comfortable touch target */
+  --tabbar-h: 64px;
+  --ring-size: 180px;
+}
+
+@media (min-width: 600px) {
+  :root { --ring-size: 220px; }
+}
+
+/* ---------- Reduced motion ----------
+   Two ways to turn motion off: the operating-system setting, or our own
+   "Reduce motion" switch (which sets data-motion="off" on <html>).
+   Note: animation-iteration-count: 1 with a tiny duration makes looping
+   animations jump to their END state, so every animated element must look
+   fine in its normal (un-animated) style. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

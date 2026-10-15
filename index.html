@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="daylight">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter Café · A quiet place to read</title>
+  <meta name="description" content="A calm, camera-free reading café in your browser.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 
+  <!-- Runs BEFORE the page paints, so there is no flash of the wrong theme.
+       It only reads saved settings; theme.js handles the buttons later. -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      try {
+        var s = JSON.parse(localStorage.getItem('cc_settings')) || {};
+        var theme = (s.theme === 'daylight' || s.theme === 'midnight') ? s.theme : (dark ? 'midnight' : 'daylight');
+        root.setAttribute('data-theme', theme);
+        if (s.motion === 'off') root.setAttribute('data-motion', 'off');
+      } catch (e) {
+        root.setAttribute('data-theme', dark ? 'midnight' : 'daylight');
+      }
+    })();
+  </script>
+
+  <!-- Fonts load from Google (free, open licence). If they fail, the
+       fallback fonts in tokens.css are used. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages/home.css">
+
+  <script type="module" src="assets/js/main.js"></script>
+  <script type="module" src="assets/js/pages/home.js"></script>
+</head>
+<body class="page-home">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="index.html" aria-label="Chapter Café, home">
+        <span class="brand__mark" aria-hidden="true">☕</span>
+        <span>Chapter Café</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-link" href="pages/nook.html">Nook</a>
+        <span class="nav-link is-disabled" aria-disabled="true">Library<span class="visually-hidden"> (coming soon)</span></span>
+        <span class="nav-link is-disabled" aria-disabled="true">Shelf<span class="visually-hidden"> (coming soon)</span></span>
+        <span class="nav-link is-disabled" aria-disabled="true">Journal<span class="visually-hidden"> (coming soon)</span></span>
+      </nav>
+      <button id="theme-toggle" type="button" class="icon-btn" aria-label="Switch to dark theme">
+        <span data-icon aria-hidden="true">☾</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="banner-region" class="container banner-region"></div>
+
+  <main id="main" class="container" tabindex="-1">
+    <section class="card hero" aria-labelledby="home-title">
+      <div class="hero__text">
+        <h1 id="home-title">Welcome to Chapter Café</h1>
+        <p class="hero__tagline">A quiet place to read.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="pages/nook.html">Enter the Nook</a>
+          <button type="button" class="btn btn--secondary" aria-disabled="true" aria-describedby="library-note">Browse the Library</button>
+        </div>
+        <p id="library-note" class="hero__note">The Library opens in a later update.</p>
+      </div>
+
+      <!-- Decorative illustration: hidden from screen readers -->
+      <svg class="window-scene" viewBox="0 0 320 240" aria-hidden="true" focusable="false">
+        <rect class="wall" width="320" height="240" rx="16"/>
+        <rect class="frame" x="60" y="24" width="200" height="150" rx="8"/>
+        <rect class="sky" x="70" y="34" width="180" height="130" rx="4"/>
+        <rect class="frame" x="156" y="34" width="8" height="130"/>
+        <rect class="frame" x="70" y="96" width="180" height="8"/>
+        <rect class="frame" x="44" y="172" width="232" height="14" rx="5"/>
+        <rect class="cup" x="135" y="146" width="40" height="26" rx="8"/>
+        <path class="cup-handle" d="M175 152 q16 0 16 10 t-16 10"/>
+        <path class="steam steam--1" d="M147 138 c-8 -8 8 -14 0 -24"/>
+        <path class="steam steam--2" d="M162 138 c-8 -8 8 -14 0 -24"/>
+      </svg>
+    </section>
+
+    <!-- Filled in by home.js only when she has a book open -->
+    <div id="continue-slot"></div>
+
+    <section aria-labelledby="inside-title">
+      <h2 id="inside-title" class="section-title">What's inside</h2>
+      <div class="features">
+        <article class="card feature">
+          <h3>A quiet timer</h3>
+          <p>Choose 15, 25 or 45 minutes and just read. No alarms, no pressure.</p>
+          <span class="tag">Open now</span>
+        </article>
+        <article class="card feature">
+          <h3>Soft sounds</h3>
+          <p>Rain, a crackling fire and café murmur, whenever you want them.</p>
+          <span class="tag">Coming soon</span>
+        </article>
+        <article class="card feature">
+          <h3>Free books</h3>
+          <p>Classic novels from the public domain, right here in your browser.</p>
+          <span class="tag">Coming soon</span>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="container">
+    <footer class="card site-footer">
+      <div class="site-footer__row">
+        <p>Made with care, as a gift.</p>
+        <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
+          Reduce motion <span data-state aria-hidden="true">Off</span>
+        </button>
+      </div>
+      <p class="field__help">Fonts: Lora and Nunito (SIL Open Font License) from Google Fonts. No camera. No tracking.</p>
+    </footer>
+  </div>
+
+  <nav class="tabbar" aria-label="Main">
+    <a class="tabbar__item" href="pages/nook.html"><span class="tabbar__icon" aria-hidden="true">☕</span>Nook</a>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">📚</span>Library<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">🔖</span>Shelf<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">✎</span>Journal<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">⋯</span>More<span class="visually-hidden"> (coming soon)</span></span>
+  </nav>
+
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+</body>
+</html>

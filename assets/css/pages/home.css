@@ -1,1 +1,77 @@
+/* ==========================================================================
+   home.css — styles used only by index.html
+   ========================================================================== */
 
+/* Colours for the little window illustration (decorative only) */
+:root {
+  --scene-wall: #E9DCCB;
+  --scene-sky: #C9D8E2;
+  --scene-frame: #8C6B4B;
+  --scene-cup: #FFFBF5;
+  --scene-steam: #8C6B4B;
+}
+:root[data-theme="midnight"] {
+  --scene-wall: #352E41;
+  --scene-sky: #3C3A5A;
+  --scene-frame: #8A7C9C;
+  --scene-cup: #EDE3D3;
+  --scene-steam: #BDB2C4;
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-6) var(--space-5);
+}
+@media (min-width: 900px) {
+  .hero { grid-template-columns: 1.1fr 0.9fr; padding: var(--space-7); }
+}
+.hero h1 { font-size: var(--fs-hero); line-height: 1.1; }
+.hero__tagline { font-size: var(--fs-md); color: var(--text-muted); }
+.hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
+.hero__note { margin-top: var(--space-2); font-size: var(--fs-sm); color: var(--text-muted); }
+
+/* The window illustration */
+.window-scene { display: block; width: 100%; height: auto; max-height: 320px; }
+.window-scene .wall   { fill: var(--scene-wall); }
+.window-scene .sky    { fill: var(--scene-sky); }
+.window-scene .frame  { fill: var(--scene-frame); }
+.window-scene .cup    { fill: var(--scene-cup); }
+.window-scene .cup-handle {
+  fill: none;
+  stroke: var(--scene-cup);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+/* Steam. Its normal style (opacity .7) is what shows when motion is
+   reduced; the animation only adds the gentle rising effect. */
+.window-scene .steam {
+  fill: none;
+  stroke: var(--scene-steam);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0.7;
+  transform-box: fill-box;
+  animation: steam-rise 6s ease-in-out infinite;
+}
+.window-scene .steam--2 { animation-delay: 1.5s; }
+@keyframes steam-rise {
+  0%   { opacity: 0;   transform: translateY(8px); }
+  40%  { opacity: 0.8; }
+  100% { opacity: 0;   transform: translateY(-12px); }
+}
+
+.section-title { font-size: var(--fs-xl); }
+
+.features { display: grid; gap: var(--space-4); }
+@media (min-width: 600px) {
+  .features { grid-template-columns: repeat(3, 1fr); }
+}
+.feature { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.feature h3 { font-size: var(--fs-md); margin: 0; }
+.feature p { margin: 0; color: var(--text-muted); }
+
+.continue-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.continue-card h2 { font-size: var(--fs-lg); margin-bottom: var(--space-1); }
+.continue-card p { margin: 0; }

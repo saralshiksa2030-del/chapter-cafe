@@ -1,1 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="daylight" data-nook="rainy">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Your Nook · Chapter Café</title>
+  <meta name="description" content="Settle in with a quiet timer and a cozy scene.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 
+  <!-- Runs BEFORE the page paints: sets theme, motion and scene so nothing flashes.
+       If no scene was chosen yet: Rainy Window in light theme, Midnight Library in dark. -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = dark ? 'midnight' : 'daylight';
+      var scene = null;
+      try {
+        var s = JSON.parse(localStorage.getItem('cc_settings')) || {};
+        if (s.theme === 'daylight' || s.theme === 'midnight') theme = s.theme;
+        if (s.motion === 'off') root.setAttribute('data-motion', 'off');
+        scene = JSON.parse(localStorage.getItem('cc_nook_scene'));
+      } catch (e) { /* storage blocked: use defaults */ }
+      if (scene !== 'rainy' && scene !== 'sunny' && scene !== 'library') {
+        scene = theme === 'midnight' ? 'library' : 'rainy';
+      }
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-nook', scene);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/tokens.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/pages/nook.css">
+
+  <script type="module" src="../assets/js/main.js"></script>
+  <script type="module" src="../assets/js/pages/nook.js"></script>
+</head>
+<body class="page-nook">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Decorative scene layers (rain, light). Hidden from screen readers. -->
+  <div class="nook-scene" aria-hidden="true">
+    <div class="nook-scene__glow"></div>
+    <div class="nook-scene__beam"></div>
+    <div class="nook-scene__rain"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../index.html" aria-label="Chapter Café, home">
+        <span class="brand__mark" aria-hidden="true">☕</span>
+        <span>Chapter Café</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-link" href="nook.html" aria-current="page">Nook</a>
+        <span class="nav-link is-disabled" aria-disabled="true">Library<span class="visually-hidden"> (coming soon)</span></span>
+        <span class="nav-link is-disabled" aria-disabled="true">Shelf<span class="visually-hidden"> (coming soon)</span></span>
+        <span class="nav-link is-disabled" aria-disabled="true">Journal<span class="visually-hidden"> (coming soon)</span></span>
+      </nav>
+      <button id="theme-toggle" type="button" class="icon-btn" aria-label="Switch to dark theme">
+        <span data-icon aria-hidden="true">☾</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="banner-region" class="container banner-region"></div>
+
+  <main id="main" class="container" tabindex="-1">
+    <div class="card page-intro">
+      <h1 id="page-title" tabindex="-1">Your Nook</h1>
+      <p>Settle in. Everything here is optional.</p>
+    </div>
+
+    <!-- First-visit tip. Shown by nook.js only until she dismisses it. -->
+    <aside id="help-card" class="card card--soft tip-card" aria-label="Welcome tip" hidden>
+      <p>Pick a scene, then start the timer whenever you're ready.</p>
+      <button id="btn-help-dismiss" type="button" class="btn btn--quiet">Got it</button>
+    </aside>
+
+    <p id="other-tab-note" class="banner" role="status" hidden>Your Nook is open in another tab.</p>
+
+    <section class="card" aria-labelledby="scene-title">
+      <h2 id="scene-title" class="card__title">Choose a scene</h2>
+      <div class="scene-options" role="radiogroup" aria-labelledby="scene-title">
+        <label class="scene-option">
+          <input type="radio" name="scene" value="rainy">
+          <span class="scene-option__box">
+            <span class="scene-option__swatch scene-option__swatch--rainy" aria-hidden="true"></span>
+            <span class="scene-option__name"><span class="scene-option__check" aria-hidden="true">✓</span>Rainy Window<span class="visually-hidden">: soft rain, a warm lamp.</span></span>
+          </span>
+        </label>
+        <label class="scene-option">
+          <input type="radio" name="scene" value="sunny">
+          <span class="scene-option__box">
+            <span class="scene-option__swatch scene-option__swatch--sunny" aria-hidden="true"></span>
+            <span class="scene-option__name"><span class="scene-option__check" aria-hidden="true">✓</span>Sunny Corner<span class="visually-hidden">: morning light and a quiet corner.</span></span>
+          </span>
+        </label>
+        <label class="scene-option">
+          <input type="radio" name="scene" value="library">
+          <span class="scene-option__box">
+            <span class="scene-option__swatch scene-option__swatch--library" aria-hidden="true"></span>
+            <span class="scene-option__name"><span class="scene-option__check" aria-hidden="true">✓</span>Midnight Library<span class="visually-hidden">: lamplight and long shelves.</span></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <div class="nook-grid">
+      <!-- ============ Timer ============ -->
+      <section class="card timer-card" aria-labelledby="timer-title">
+        <h2 id="timer-title" class="card__title" tabindex="-1">Quiet timer</h2>
+
+        <div id="timer-panel" class="timer-panel" data-status="idle">
+          <div class="timer-ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+              <circle class="ring-track" cx="60" cy="60" r="54"></circle>
+              <circle id="ring-progress" class="ring-progress" cx="60" cy="60" r="54"></circle>
+            </svg>
+            <!-- aria-live="off": announcing every second would be exhausting.
+                 Start, pause and finish are announced in #timer-status instead. -->
+            <div id="time-display" class="timer-ring__time" role="timer" aria-live="off">25:00</div>
+          </div>
+
+          <fieldset class="presets">
+            <legend class="visually-hidden">Timer length</legend>
+            <div class="chip-group">
+              <label class="chip"><input type="radio" name="preset" value="15"><span class="chip__label">15 min</span></label>
+              <label class="chip"><input type="radio" name="preset" value="25"><span class="chip__label">25 min</span></label>
+              <label class="chip"><input type="radio" name="preset" value="45"><span class="chip__label">45 min</span></label>
+              <label class="chip"><input type="radio" name="preset" value="custom"><span class="chip__label">Custom</span></label>
+            </div>
+          </fieldset>
+
+          <div id="custom-wrap" class="field custom-minutes" hidden>
+            <label for="custom-minutes">Minutes (1 to 180)</label>
+            <input id="custom-minutes" type="number" inputmode="numeric" min="1" max="180" step="1"
+                   aria-describedby="custom-help custom-error" aria-invalid="false">
+            <p id="custom-help" class="field__help">Any length is fine.</p>
+            <p id="custom-error" class="field__error" hidden></p>
+          </div>
+
+          <p id="preset-note" class="field__help" hidden>Finish this session to change the time.</p>
+
+          <div class="timer-actions">
+            <button id="btn-start" type="button" class="btn btn--primary">Start</button>
+            <button id="btn-finish" type="button" class="btn btn--secondary" hidden>Finish</button>
+          </div>
+
+          <div class="reader-link">
+            <button type="button" class="btn btn--secondary" aria-disabled="true" aria-describedby="reader-note">Open Reader</button>
+            <p id="reader-note" class="field__help">No book open yet. The Library and Reader open in a later update.</p>
+          </div>
+        </div>
+
+        <!-- Shown instead of the timer when a session ends -->
+        <div id="summary-panel" class="summary" hidden>
+          <h3 id="summary-title" class="summary__title" tabindex="-1"></h3>
+          <p id="summary-text"></p>
+          <div class="timer-actions">
+            <button id="btn-another" type="button" class="btn btn--primary">Another session</button>
+            <button id="btn-done" type="button" class="btn btn--secondary">Done</button>
+          </div>
+        </div>
+
+        <!-- Screen-reader messages: start, pause, resume, finish -->
+        <p id="timer-status" class="visually-hidden" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- ============ Sounds (placeholder) ============ -->
+      <section class="card" aria-labelledby="sounds-title">
+        <h2 id="sounds-title" class="card__title">Sounds</h2>
+        <p class="muted">Soft rain, a crackling fire and café murmur arrive in the next update. For now, your nook is quiet.</p>
+        <span class="tag">Coming soon</span>
+      </section>
+
+      <!-- ============ Today ============ -->
+      <section class="card" aria-labelledby="today-title">
+        <h2 id="today-title" class="card__title">Today</h2>
+        <p id="today-minutes" class="today-minutes"></p>
+        <div id="rhythm" class="rhythm" aria-hidden="true"></div>
+        <p id="rhythm-text" class="field__help"></p>
+
+        <div class="menu-block">
+          <h3>Menu</h3>
+          <p class="field__help">Just for atmosphere. Pick what you're sipping.</p>
+          <fieldset class="chip-group">
+            <legend class="visually-hidden">Your drink</legend>
+            <label class="chip"><input type="radio" name="drink" value="latte"><span class="chip__label">Latte</span></label>
+            <label class="chip"><input type="radio" name="drink" value="chai"><span class="chip__label">Chai</span></label>
+            <label class="chip"><input type="radio" name="drink" value="cocoa"><span class="chip__label">Hot chocolate</span></label>
+            <label class="chip"><input type="radio" name="drink" value="tea"><span class="chip__label">Green tea</span></label>
+            <label class="chip"><input type="radio" name="drink" value="water"><span class="chip__label">Water</span></label>
+          </fieldset>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="container">
+    <footer class="card site-footer">
+      <div class="site-footer__row">
+        <p>Made with care, as a gift.</p>
+        <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
+          Reduce motion <span data-state aria-hidden="true">Off</span>
+        </button>
+      </div>
+      <p class="field__help">Fonts: Lora and Nunito (SIL Open Font License) from Google Fonts. No camera. No tracking.</p>
+    </footer>
+  </div>
+
+  <nav class="tabbar" aria-label="Main">
+    <a class="tabbar__item" href="nook.html" aria-current="page"><span class="tabbar__icon" aria-hidden="true">☕</span>Nook</a>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">📚</span>Library<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">🔖</span>Shelf<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">✎</span>Journal<span class="visually-hidden"> (coming soon)</span></span>
+    <span class="tabbar__item is-disabled" aria-disabled="true"><span class="tabbar__icon" aria-hidden="true">⋯</span>More<span class="visually-hidden"> (coming soon)</span></span>
+  </nav>
+
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+</body>
+</html>

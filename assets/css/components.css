@@ -1,1 +1,297 @@
+/* ==========================================================================
+   components.css — reusable pieces: navbar, tab bar, buttons, cards, chips,
+   fields, banners, toast, footer.
+   ========================================================================== */
 
+/* ---------- Navbar ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--text);
+  text-decoration: none;
+}
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.nav-links { display: none; gap: var(--space-2); }
+@media (min-width: 600px) {
+  .nav-links { display: flex; }
+}
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding-inline: var(--space-3);
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+a.nav-link:hover { background: var(--surface-2); border-radius: var(--radius-sm); }
+.nav-link[aria-current="page"] { font-weight: 700; border-bottom-color: var(--accent); }
+.is-disabled { opacity: 0.55; cursor: not-allowed; }
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-soft);
+}
+.icon-btn:hover { background: var(--surface-2); }
+
+/* ---------- Mobile tab bar (hidden from 600px up) ---------- */
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: var(--z-nav);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.tabbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--tabbar-h);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-decoration: none;
+  border-top: 3px solid transparent;
+}
+.tabbar__icon { font-size: 1.3rem; line-height: 1; }
+.tabbar__item[aria-current="page"] {
+  color: var(--accent);
+  font-weight: 700;
+  border-top-color: var(--accent);
+}
+@media (min-width: 600px) {
+  .tabbar { display: none; }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font: 700 var(--fs-base)/1.2 var(--font-ui);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-soft),
+              transform var(--dur-fast) var(--ease-soft);
+}
+.btn:active { transform: scale(0.98); }
+
+.btn--primary { background: var(--accent); color: var(--accent-contrast); }
+.btn--primary:hover { background: var(--accent-hover); }
+
+.btn--secondary { background: transparent; color: var(--text); border-color: var(--border-control); }
+.btn--secondary:hover { background: var(--surface-2); }
+
+.btn--quiet { background: transparent; color: var(--accent); min-height: var(--tap-min); padding-inline: var(--space-3); }
+.btn--quiet:hover { text-decoration: underline; }
+
+/* "Disabled" buttons use aria-disabled instead of the disabled attribute,
+   so keyboard users can still focus them and hear WHY they're unavailable. */
+.btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+.btn[aria-disabled="true"]:active { transform: none; }
+.btn--primary[aria-disabled="true"]:hover { background: var(--accent); }
+.btn--secondary[aria-disabled="true"]:hover { background: transparent; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-1);
+  padding: var(--space-5);
+}
+.card--soft { background: var(--accent-soft); }
+.card__title { font-size: var(--fs-lg); margin-bottom: var(--space-4); }
+.muted { color: var(--text-muted); }
+
+.tag {
+  display: inline-block;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* ---------- Chips (styled radio buttons) ----------
+   A real <input type="radio"> sits invisibly on top of a styled <span>.
+   WHY: native radios give keyboard arrows and screen-reader support free. */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.chip { position: relative; display: inline-block; }
+.chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.chip__label {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  transition: background-color var(--dur-fast) var(--ease-soft);
+}
+.chip input:hover + .chip__label { background: var(--surface-2); }
+.chip input:checked + .chip__label { background: var(--accent-soft); border-color: var(--accent); }
+/* A tick mark, so "selected" is not shown by colour alone.
+   The second declaration adds empty alt text so screen readers skip it. */
+.chip input:checked + .chip__label::before {
+  content: "✓";
+  content: "✓" / "";
+  margin-right: 0.4em;
+}
+.chip input:focus-visible + .chip__label { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+.chip input:disabled { cursor: not-allowed; }
+.chip input:disabled + .chip__label { opacity: 0.55; cursor: not-allowed; }
+
+/* ---------- Form fields ---------- */
+.field label { display: block; font-weight: 700; margin-bottom: var(--space-1); }
+.field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  font: inherit;                  /* 16px+ stops iPhones zooming on focus */
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.field input[aria-invalid="true"] { border-color: var(--error); }
+.field input:disabled { opacity: 0.55; cursor: not-allowed; }
+.field__help { margin: var(--space-1) 0 0; color: var(--text-muted); font-size: var(--fs-sm); }
+.field__error { margin: var(--space-1) 0 0; color: var(--error); font-weight: 700; font-size: var(--fs-sm); }
+
+/* ---------- Toggle switch button (Reduce motion) ---------- */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text);
+  font: 700 var(--fs-sm)/1 var(--font-ui);
+  cursor: pointer;
+}
+.switch[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+/* ---------- Banners (notes that need to stay visible) ---------- */
+.banner-region { display: grid; gap: var(--space-2); padding-top: var(--space-3); }
+.banner-region:empty { padding: 0; }
+.banner {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+
+/* ---------- Toast (short message that fades by itself) ---------- */
+.toast-region {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + var(--space-3));
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-4);
+  pointer-events: none;           /* clicks pass through the empty region */
+}
+@media (min-width: 600px) {
+  .toast-region { bottom: var(--space-5); }
+}
+.toast {
+  pointer-events: auto;
+  max-width: 32rem;
+  padding: var(--space-3) var(--space-5);
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-3);
+  animation: toast-in var(--dur-base) var(--ease-soft);
+}
+.toast--leaving { opacity: 0; transition: opacity var(--dur-base) var(--ease-soft); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Footer ---------- */
+.site-footer { margin-block: var(--space-5) var(--space-6); }
+.site-footer__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.site-footer p { margin: 0; color: var(--text-muted); }

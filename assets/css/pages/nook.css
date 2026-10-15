@@ -1,1 +1,209 @@
+/* ==========================================================================
+   nook.css — styles used only by pages/nook.html
+   ========================================================================== */
 
+/* The Nook's page colour comes from the chosen SCENE, not the theme.
+   WHY: text never sits directly on this colour. Everything readable is
+   inside a .card, so contrast stays safe in every scene. */
+.page-nook {
+  background: var(--nook-bg);
+  transition: background-color var(--dur-slow) var(--ease-in-out);
+}
+
+/* ---------- Decorative scene layers (behind everything) ---------- */
+.nook-scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nook-scene__glow,
+.nook-scene__beam,
+.nook-scene__rain { position: absolute; inset: 0; opacity: 0; }
+
+.nook-scene__glow {
+  background: radial-gradient(70% 55% at 75% 0%, var(--nook-light), transparent 70%);
+  opacity: 0.35;
+}
+[data-nook="sunny"] .nook-scene__glow { opacity: 0.5; }
+[data-nook="library"] .nook-scene__glow {
+  background: radial-gradient(50% 45% at 85% 75%, var(--nook-light), transparent 70%);
+  animation: lamp-flicker 5s ease-in-out infinite;   /* slow: well under 3 flashes/sec */
+}
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 0.30; }
+  50%      { opacity: 0.40; }
+}
+
+/* Sunny: one soft diagonal beam of light */
+[data-nook="sunny"] .nook-scene__beam {
+  opacity: 1;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 217, 138, 0.35) 45%, transparent 60%);
+}
+
+/* Rainy: thin vertical lines chopped into dashes by a mask, then slid down
+   by exactly one mask period so the loop is seamless. Two layers with
+   different sizes keep it from looking like a grid. */
+[data-nook="rainy"] .nook-scene__rain { opacity: 0.5; }
+.nook-scene__rain::before,
+.nook-scene__rain::after {
+  content: "";
+  position: absolute;
+  inset: -80px 0 0 0;
+  background: repeating-linear-gradient(90deg, transparent 0 23px, rgba(169, 188, 203, 0.45) 23px 24px);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 60px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 60px);
+  animation: rain-fall 1.4s linear infinite;
+}
+.nook-scene__rain::after {
+  background: repeating-linear-gradient(90deg, transparent 0 31px, rgba(169, 188, 203, 0.35) 31px 32px);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 12px, transparent 12px 84px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 12px, transparent 12px 84px);
+  animation-duration: 2.1s;
+  animation-name: rain-fall-slow;
+}
+@keyframes rain-fall      { to { transform: translateY(60px); } }
+@keyframes rain-fall-slow { to { transform: translateY(84px); } }
+
+/* Reduced motion: keep a faint still frame instead of moving rain */
+@media (prefers-reduced-motion: reduce) {
+  [data-nook="rainy"] .nook-scene__rain { opacity: 0.15; }
+}
+:root[data-motion="off"][data-nook="rainy"] .nook-scene__rain { opacity: 0.15; }
+
+/* ---------- Page layout ---------- */
+.page-intro h1 { font-size: var(--fs-2xl); margin-bottom: var(--space-2); }
+.page-intro p { margin: 0; color: var(--text-muted); }
+.page-intro .tip-actions { margin-top: var(--space-3); }
+
+.tip-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.tip-card p { margin: 0; }
+
+/* Phones: one column. Tablets: timer on top, two cards below.
+   Desktop: three columns. */
+.nook-grid { display: grid; gap: var(--space-5); align-items: start; }
+@media (min-width: 600px) {
+  .nook-grid { grid-template-columns: 1fr 1fr; }
+  .timer-card { grid-column: 1 / -1; }
+}
+@media (min-width: 900px) {
+  .nook-grid { grid-template-columns: 5fr 4fr 3fr; }
+  .timer-card { grid-column: auto; }
+}
+
+/* ---------- Scene picker ---------- */
+.scene-options {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;                 /* phones: swipe sideways */
+  scroll-snap-type: x mandatory;
+  padding: var(--space-1);          /* room so focus rings are not clipped */
+}
+@media (min-width: 600px) {
+  .scene-options { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
+}
+.scene-option { position: relative; flex: 0 0 150px; scroll-snap-align: start; }
+@media (min-width: 600px) {
+  .scene-option { flex: none; }
+}
+.scene-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+.scene-option__box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  padding: var(--space-2);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-fast) var(--ease-soft);
+}
+.scene-option input:hover + .scene-option__box { background: var(--surface-2); }
+.scene-option input:checked + .scene-option__box {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.scene-option input:focus-visible + .scene-option__box {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+}
+.scene-option__swatch { height: 56px; border-radius: var(--radius-sm); }
+.scene-option__swatch--rainy   { background: linear-gradient(160deg, #3C4A57, #A9BCCB); }
+.scene-option__swatch--sunny   { background: linear-gradient(160deg, #F8E8CF, #FFD98A); }
+.scene-option__swatch--library { background: linear-gradient(160deg, #2A2433, #E8B36B); }
+.scene-option__name { display: flex; align-items: center; gap: var(--space-1); font-weight: 700; font-size: var(--fs-sm); }
+.scene-option__check { visibility: hidden; color: var(--accent); }
+.scene-option input:checked + .scene-option__box .scene-option__check { visibility: visible; }
+
+/* ---------- Timer ---------- */
+.timer-card { text-align: center; }
+.timer-card .card__title { text-align: center; }
+.timer-panel { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+
+.timer-ring { position: relative; width: var(--ring-size); height: var(--ring-size); }
+.timer-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }  /* start at 12 o'clock */
+.ring-track { fill: none; stroke: var(--surface-2); stroke-width: 10; }
+.ring-progress {
+  fill: none;
+  stroke: var(--secondary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+.timer-ring__time {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif);
+  font-size: var(--fs-2xl);
+  font-variant-numeric: tabular-nums;   /* digits all the same width: no jitter */
+}
+
+.presets { display: flex; justify-content: center; border: 0; padding: 0; margin: 0; min-width: 0; }
+.presets .chip-group { justify-content: center; }
+.custom-minutes { width: 100%; max-width: 16rem; text-align: left; }
+
+.timer-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
+.timer-actions .btn { min-width: 9rem; }
+
+.reader-link { margin-top: var(--space-4); }
+.reader-link .field__help { margin-top: var(--space-2); }
+
+.summary { border-left: 4px solid var(--secondary); padding-left: var(--space-4); text-align: left; }
+.summary__title { font-size: var(--fs-xl); }
+.summary .timer-actions { justify-content: flex-start; margin-top: var(--space-4); }
+
+/* ---------- Today card ---------- */
+.today-minutes { font-family: var(--font-serif); font-size: var(--fs-lg); margin-bottom: var(--space-3); }
+
+.rhythm { display: flex; gap: var(--space-2); margin-bottom: var(--space-2); }
+.rhythm__dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-control);
+  border-radius: 50%;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+.rhythm__dot[data-read="true"] {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--secondary-contrast);
+}
+.rhythm__dot[data-today="true"] { transform: scale(1.2); }   /* today is a bit bigger */
+
+.menu-block { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+.menu-block h3 { font-size: var(--fs-md); }
