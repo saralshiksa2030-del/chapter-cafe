@@ -5,13 +5,17 @@
    HOW WEB AUDIO WORKS (the short version)
    Sounds flow through a chain of "nodes", like pipes:
 
-     source (the file, looping) -> gain (this sound's volume)
+     source (the sound, looping) -> gain (this sound's volume)
                                       -> master gain (overall volume / mute)
                                            -> speakers (ctx.destination)
 
    WHY decoded buffers instead of an <audio> tag? A decoded buffer with
    loop = true repeats with no gap, which matters for rain and fire.
    (Trade-off: decoded sound uses more memory, so keep files short.)
+
+   WHERE A BUFFER COMES FROM: a real file (fetched and decoded) or, for
+   sounds with a "generator", built by our own code (RAIN PATCH below).
+   Either way the rest of the engine treats it the same.
 
    AUTOPLAY RULE: browsers only allow sound after the person clicks or
    presses a key. So the AudioContext is created inside click handlers
@@ -24,6 +28,14 @@
 
 import { getItem, setItem } from './storage.js';
 import { SOUNDS, SOUND_BY_ID } from './sound-catalog.js';
+import { createRainBuffer } from './rain-generator.js';   // RAIN PATCH
+
+// RAIN PATCH: sounds the code can make by itself. The key matches the
+// "generator" field in sound-catalog.js. To add another one later (say, a
+// fire crackle), write a function that returns an AudioBuffer and add it here.
+const GENERATORS = {
+  rain: createRainBuffer,
+};
 
 const FADE_IN = 0.3;                      // seconds
 const FADE_OUT = 1.0;
@@ -42,7 +54,7 @@ let pausedByOtherTab = false;
 let saveTimer = null;
 let hiddenTimer = null;
 
-const buffers = new Map();   // sound id -> decoded audio (decoded once, reused)
+const buffers = new Map();   // sound id -> ready-to-play audio (made once, reused)
 const pending = new Map();   // sound id -> loading in progress (avoids double loads)
 const listeners = new Set();
 
@@ -183,7 +195,7 @@ function targetGain(sound) {
   return state.sounds[sound.id].vol * sound.trim;
 }
 
-/* ---------- Loading sound files ---------- */
+/* ---------- Getting a sound ready (file or generated) ---------- */
 
 function decode(data) {
   // Callback style works in every browser; we wrap it in a Promise.
@@ -208,10 +220,35 @@ async function fetchAndDecode(sound) {
   throw lastError || new Error('No files listed for this sound');
 }
 
+/**
+ * RAIN PATCH: the order of attempts is
+ *   1. real files, if the catalog lists any
+ *   2. the built-in generator, if the sound has one
+ * If neither works, the error reaches startChannel, which shows
+ * "couldn't load" on that row.
+ */
+async function loadBuffer(sound) {
+  if (sound.files.length > 0) {
+    try {
+      return await fetchAndDecode(sound);
+    } catch (err) {
+      if (!sound.generator) throw err;      // nothing to fall back on
+      console.info(`[Chapter Café] Using the built-in "${sound.generator}" instead of a file.`);
+    }
+  }
+
+  const generate = GENERATORS[sound.generator];
+  if (!generate) throw new Error('This sound has no files and no built-in generator');
+
+  // Let the browser paint "Loading…" before we spend a moment calculating.
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  return generate(ctx);
+}
+
 function getBuffer(sound) {
   if (buffers.has(sound.id)) return Promise.resolve(buffers.get(sound.id));
   if (pending.has(sound.id)) return pending.get(sound.id);
-  const promise = fetchAndDecode(sound).then(
+  const promise = loadBuffer(sound).then(
     (buffer) => { buffers.set(sound.id, buffer); pending.delete(sound.id); return buffer; },
     (err) => { pending.delete(sound.id); throw err; }
   );
