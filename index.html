@@ -16,8 +16,9 @@
       var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       try {
         var s = JSON.parse(localStorage.getItem('cc_settings')) || {};
-        var theme = (s.theme === 'daylight' || s.theme === 'midnight') ? s.theme : (dark ? 'midnight' : 'daylight');
-        root.setAttribute('data-theme', theme);
+        var saved = s.theme;
+        var chosen = (saved === 'daylight' || saved === 'midnight' || saved === 'contrast');
+        root.setAttribute('data-theme', chosen ? saved : (dark ? 'midnight' : 'daylight'));
         if (s.motion === 'off') root.setAttribute('data-motion', 'off');
       } catch (e) {
         root.setAttribute('data-theme', dark ? 'midnight' : 'daylight');
@@ -34,6 +35,7 @@
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/themes.css">
   <link rel="stylesheet" href="assets/css/pages/home.css">
 
   <script type="module" src="assets/js/main.js"></script>
@@ -103,7 +105,7 @@
         <article class="card feature">
           <h3>Soft sounds</h3>
           <p>Rain, a crackling fire and café murmur, whenever you want them.</p>
-          <span class="tag">Coming soon</span>
+          <span class="tag">Open now</span>
         </article>
         <article class="card feature">
           <h3>Free books</h3>
@@ -118,9 +120,20 @@
     <footer class="card site-footer">
       <div class="site-footer__row">
         <p>Made with care, as a gift.</p>
-        <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
-          Reduce motion <span data-state aria-hidden="true">Off</span>
-        </button>
+        <div class="footer-controls">
+          <div class="select-field">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select">
+              <option value="auto">Match my device</option>
+              <option value="daylight">Daylight</option>
+              <option value="midnight">Midnight</option>
+              <option value="contrast">High contrast</option>
+            </select>
+          </div>
+          <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
+            Reduce motion <span data-state aria-hidden="true">Off</span>
+          </button>
+        </div>
       </div>
       <p class="field__help">Fonts: Lora and Nunito (SIL Open Font License) from Google Fonts. No camera. No tracking.</p>
     </footer>
