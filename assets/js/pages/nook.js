@@ -217,6 +217,11 @@ function quietMinutes(n) {
 }
 
 function handleComplete(result) {
+  // SPRINT 2: announce "a session ended" to other modules. nook-sounds.js
+  // listens for this to play the optional chime. A custom event means the
+  // timer code never needs to know that sound exists.
+  document.dispatchEvent(new CustomEvent('cc:session-ended', { detail: result }));
+
   if (result.minutes >= 1) {
     const isNew = addSession({
       id: result.id,
@@ -328,6 +333,9 @@ function initHelp() {
    Start everything
    ========================================================================== */
 ringProgress.style.strokeDasharray = String(RING_LENGTH);
+// SPRINT 2: start the ring EMPTY. Without this the ring flashes full for a
+// moment on load, because a circle with no offset shows its whole outline.
+ringProgress.style.strokeDashoffset = String(RING_LENGTH);
 
 const timer = createTimer({
   onChange: render,
