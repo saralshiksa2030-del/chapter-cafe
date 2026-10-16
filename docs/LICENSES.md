@@ -9,7 +9,12 @@ Only bundle files that are **CC0** (public domain dedication). CC0 means
 anyone may use the file for any purpose without asking or giving credit.
 Re-check the licence on the source page on the day you download.
 
-## Where to find CC0 loops (free)
+## Sounds made by our own code (no licence needed)
+- Rain: generated in assets/js/modules/rain-generator.js
+- Session chime: generated in assets/js/modules/audio-mixer.js
+No file, no source, no credit needed: we wrote the code.
+
+## Where to find CC0 loops (free) for the other sounds
 - Freesound: https://freesound.org/ . Search for a sound, then in the
   filters choose License > "Creative Commons 0".
   (I believe a free account is needed to download. Check the site.)
@@ -25,20 +30,19 @@ Re-check the licence on the source page on the day you download.
 
 ## Files the code expects (in assets/audio/)
 Provide at least ONE of the two formats for each sound.
-| Sound        | File names                       |
-|--------------|----------------------------------|
-| Rain         | rain.ogg and/or rain.mp3         |
-| Fireplace    | fireplace.ogg and/or fireplace.mp3 |
-| Café murmur  | cafe.ogg and/or cafe.mp3         |
-| Birdsong     | birds.ogg and/or birds.mp3       |
+| Sound        | File names                         | Needed? |
+|--------------|------------------------------------|---------|
+| Rain         | rain.ogg and/or rain.mp3           | Optional: rain is built in. To use a recording, also set files: ['rain.ogg','rain.mp3'] in sound-catalog.js |
+| Fireplace    | fireplace.ogg and/or fireplace.mp3 | Yes |
+| Café murmur  | cafe.ogg and/or cafe.mp3           | Yes |
+| Birdsong     | birds.ogg and/or birds.mp3         | Yes |
 
 ## Credits table (fill in, one row per file)
 | File | Source URL | Creator | Licence | Date downloaded | Edits made |
 |------|-----------|---------|---------|-----------------|------------|
-| rain.ogg | (paste the Freesound page URL) | (creator name) | CC0 | YYYY-MM-DD | trimmed to 45s |
+| fireplace.ogg | (paste the Freesound page URL) | (creator name) | CC0 | YYYY-MM-DD | trimmed to 45s |
 |      |           |         |         |                 |            |
 
 ## Other things in the project
 - Fonts: Lora and Nunito, SIL Open Font License, via Google Fonts.
-- Session chime: generated in code with the Web Audio API (no file).
 - Icons/emoji: system emoji (no file).
