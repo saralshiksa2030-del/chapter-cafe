@@ -1,0 +1,61 @@
+/* ==========================================================================
+   themes.css — the High contrast theme, plus the theme picker's styles.
+   Load it AFTER tokens.css so these values win.
+
+   High contrast follows the "no pure black or white" rule's one exception:
+   people who choose it WANT maximum contrast. No textures, no scene art,
+   no shadows, strong borders.
+
+   Contrast (calculated): text 21:1, muted text 12.6:1, buttons 9.5:1,
+   focus ring 8.9:1, error text 10.1:1 — all AAA.
+   ========================================================================== */
+
+:root[data-theme="contrast"] {
+  color-scheme: light;
+
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #EDEDED;
+  --text: #000000;
+  --text-muted: #333333;
+  --accent: #7A2D18;
+  --accent-hover: #5C2111;
+  --accent-contrast: #FFFFFF;
+  --accent-soft: #F3DDD3;
+  --secondary: #1B4D33;
+  --secondary-contrast: #FFFFFF;
+  --border: #000000;
+  --border-control: #000000;
+  --focus: #0033CC;
+  --error: #8A0000;
+  --success: #1B4D33;
+
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow-3: none;
+}
+
+:root[data-theme="contrast"] .card { border: 2px solid var(--border); }
+
+/* No moving scenery in this theme: calm, plain, readable. */
+:root[data-theme="contrast"] .nook-scene { display: none; }
+:root[data-theme="contrast"] .page-nook { background: var(--bg); }
+
+/* ---------- Theme picker (in the footer) ---------- */
+.footer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+.select-field { display: flex; align-items: center; gap: var(--space-2); }
+.select-field label { font-weight: 700; font-size: var(--fs-sm); }
+.select-field select {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  font: inherit;                  /* 16px+ stops iPhones zooming on focus */
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
