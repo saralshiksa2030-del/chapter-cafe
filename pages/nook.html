@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Your Nook · Chapter Café</title>
-  <meta name="description" content="Settle in with a quiet timer and a cozy scene.">
+  <meta name="description" content="Settle in with a quiet timer, soft sounds and a cozy scene.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 
@@ -18,7 +18,7 @@
       var scene = null;
       try {
         var s = JSON.parse(localStorage.getItem('cc_settings')) || {};
-        if (s.theme === 'daylight' || s.theme === 'midnight') theme = s.theme;
+        if (s.theme === 'daylight' || s.theme === 'midnight' || s.theme === 'contrast') theme = s.theme;
         if (s.motion === 'off') root.setAttribute('data-motion', 'off');
         scene = JSON.parse(localStorage.getItem('cc_nook_scene'));
       } catch (e) { /* storage blocked: use defaults */ }
@@ -37,10 +37,13 @@
   <link rel="stylesheet" href="../assets/css/tokens.css">
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/themes.css">
   <link rel="stylesheet" href="../assets/css/pages/nook.css">
+  <link rel="stylesheet" href="../assets/css/sounds.css">
 
   <script type="module" src="../assets/js/main.js"></script>
   <script type="module" src="../assets/js/pages/nook.js"></script>
+  <script type="module" src="../assets/js/pages/nook-sounds.js"></script>
 </head>
 <body class="page-nook">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -64,9 +67,19 @@
         <span class="nav-link is-disabled" aria-disabled="true">Shelf<span class="visually-hidden"> (coming soon)</span></span>
         <span class="nav-link is-disabled" aria-disabled="true">Journal<span class="visually-hidden"> (coming soon)</span></span>
       </nav>
-      <button id="theme-toggle" type="button" class="icon-btn" aria-label="Switch to dark theme">
-        <span data-icon aria-hidden="true">☾</span>
-      </button>
+
+      <div class="header-actions">
+        <!-- Mini-player: the always-visible mute control -->
+        <div id="mini-player" class="mini-player">
+          <span id="mini-label" class="mini-player__label" aria-hidden="true" hidden></span>
+          <button id="mute-toggle" type="button" class="icon-btn" aria-pressed="false" aria-label="Mute all sounds">
+            <span data-icon aria-hidden="true">🔊</span>
+          </button>
+        </div>
+        <button id="theme-toggle" type="button" class="icon-btn" aria-label="Switch to dark theme">
+          <span data-icon aria-hidden="true">☾</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -174,11 +187,45 @@
         <p id="timer-status" class="visually-hidden" role="status" aria-live="polite"></p>
       </section>
 
-      <!-- ============ Sounds (placeholder) ============ -->
+      <!-- ============ Sounds ============ -->
       <section class="card" aria-labelledby="sounds-title">
         <h2 id="sounds-title" class="card__title">Sounds</h2>
-        <p class="muted">Soft rain, a crackling fire and café murmur arrive in the next update. For now, your nook is quiet.</p>
-        <span class="tag">Coming soon</span>
+
+        <p id="sounds-unsupported" class="banner" hidden>Sound isn't available in this browser. The timer and reader still work.</p>
+
+        <div id="sounds-body">
+          <!-- Shown when she has a saved mix, or the browser paused the sound -->
+          <div id="resume-box" class="resume-box" hidden>
+            <p id="resume-text"></p>
+            <button id="btn-resume" type="button" class="btn btn--primary">Resume your sounds</button>
+          </div>
+
+          <div class="sounds-master">
+            <button id="btn-mute-all" type="button" class="btn btn--secondary">Mute all</button>
+            <div class="sounds-master__volume">
+              <label for="master-volume">Overall volume</label>
+              <input id="master-volume" class="range" type="range" min="0" max="100" step="5" value="50">
+              <output id="master-output" for="master-volume">50%</output>
+            </div>
+          </div>
+
+          <!-- One <li> per sound, built by nook-sounds.js from sound-catalog.js -->
+          <ul id="sound-rows" class="sound-rows" aria-label="Individual sounds"></ul>
+
+          <div class="sounds-actions">
+            <button id="btn-scene-mix" type="button" class="btn btn--secondary">Use this scene's sounds</button>
+            <button id="btn-all-off" type="button" class="btn btn--quiet">Turn all off</button>
+          </div>
+          <p id="scene-mix-hint" class="field__help sounds-hint"></p>
+
+          <label class="check">
+            <input id="chime-toggle" type="checkbox">
+            Soft chime when a session ends
+          </label>
+        </div>
+
+        <!-- Screen-reader messages for sound changes -->
+        <p id="sounds-status" class="visually-hidden" role="status" aria-live="polite"></p>
       </section>
 
       <!-- ============ Today ============ -->
@@ -208,9 +255,20 @@
     <footer class="card site-footer">
       <div class="site-footer__row">
         <p>Made with care, as a gift.</p>
-        <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
-          Reduce motion <span data-state aria-hidden="true">Off</span>
-        </button>
+        <div class="footer-controls">
+          <div class="select-field">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select">
+              <option value="auto">Match my device</option>
+              <option value="daylight">Daylight</option>
+              <option value="midnight">Midnight</option>
+              <option value="contrast">High contrast</option>
+            </select>
+          </div>
+          <button id="motion-toggle" type="button" class="switch" aria-pressed="false">
+            Reduce motion <span data-state aria-hidden="true">Off</span>
+          </button>
+        </div>
       </div>
       <p class="field__help">Fonts: Lora and Nunito (SIL Open Font License) from Google Fonts. No camera. No tracking.</p>
     </footer>
